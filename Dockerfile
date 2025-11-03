@@ -44,6 +44,7 @@ RUN apk add --no-cache \
 COPY --from=builder /usr/bin/ts* /usr/bin/
 COPY --from=builder /usr/bin/srt-* /usr/bin/
 COPY --from=builder /usr/lib/libtsduck.so* /usr/lib/
+COPY --from=builder /usr/lib/tsduck/ /usr/lib/tsduck/
 COPY --from=builder /usr/lib/libtscore.so* /usr/lib/
 COPY --from=builder /usr/lib/libsrt.so* /usr/lib/
 COPY --from=builder /usr/share/tsduck/ /usr/share/tsduck/
