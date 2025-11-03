@@ -1,26 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: media-utils
+  name: media-tools
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: media-utils
+      app: media-tools
   template:
     metadata:
       labels:
-        app: media-utils
+        app: media-tools
     spec:
       containers:
-      - name: media-utils
+      - name: media-tools
         image: lalalaciccio/media-tools:latest
         command: ["/bin/bash"]
         args: ["-c", "sleep infinity"]
-        volumeMounts:
-        - name: scripts
-          mountPath: /scripts
-      volumes:
-      - name: scripts
-        hostPath:
-          path: ./scripts

@@ -47,5 +47,6 @@ COPY --from=builder /usr/lib/libtsduck.so* /usr/lib/
 COPY --from=builder /usr/lib/libtscore.so* /usr/lib/
 COPY --from=builder /usr/lib/libsrt.so* /usr/lib/
 COPY --from=builder /usr/share/tsduck/ /usr/share/tsduck/
+COPY scripts/ /app/scripts/
 
 CMD ["/bin/bash"]
