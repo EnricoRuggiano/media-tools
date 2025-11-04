@@ -79,7 +79,7 @@ RUN apk add --no-cache \
     && wget https://github.com/FFmpeg/FFmpeg/archive/refs/heads/master.tar.gz \
     && tar -xzf master.tar.gz \
     && cd FFmpeg-master \
-    && ./configure --enable-libvmaf --enable-version3 --enable-shared --enable-libdav1d \
+    && ./configure --enable-libvmaf --enable-libsrt --enable-version3 --enable-shared --enable-libdav1d \
     && make -j$(nproc) \
     && make install \
     # ========================================
