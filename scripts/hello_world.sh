@@ -17,7 +17,13 @@ echo "---------------"
 echo "SRT_LIVE_TRANSMIT"
 srt-live-transmit -version
 
+# easyvmaf
+echo "---------------"
+echo "EASYVMAF"
+easyvmaf --help
+
 # python
 echo "---------------"
 echo "PYTHON"
 python --version
+
