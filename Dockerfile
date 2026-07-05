@@ -124,6 +124,8 @@ RUN apk add --no-cache \
     py3-pip \
     dav1d \
     jq \
+    x264-libs \
+    x265-libs \
     && pip3 install ffmpeg-progress-yield
 
 # Copy compiled libraries and binaries from builder stage
