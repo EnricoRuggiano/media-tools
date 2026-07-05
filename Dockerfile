@@ -3,9 +3,11 @@ FROM alpine:3.18 AS builder
 LABEL stage=builder
 
 # Define versions for easyVmaf components
-ARG FFMPEG_version=master
-ARG VMAF_version=master
+ARG FFMPEG_version=n8.0
+ARG VMAF_version=3.0.0
 ARG easyVmaf_hash=31c59a444445125265044789d0754db8f39f71be
+ARG SRT_version=v1.5.5
+ARG TSDUCK_version=v3.43-4549
 
 RUN apk add --no-cache \
     bash \
@@ -34,12 +36,13 @@ RUN apk add --no-cache \
     dav1d-dev \
     xxd \
     x264-dev \
+    x265-dev \
     && mkdir -p /tmp/vmaf /tmp/ffmpeg /app \
     # ========================================
     # Build SRT (Secure Reliable Transport)
     # Live video streaming protocol library
     # ========================================
-    && git clone https://github.com/Haivision/srt.git /tmp/srt \
+    && git clone --branch ${SRT_version} --depth 1 https://github.com/Haivision/srt.git /tmp/srt \
     && cd /tmp/srt \
     && cmake . -DCMAKE_INSTALL_PREFIX=/usr \
     && make -j$(nproc) \
@@ -48,7 +51,7 @@ RUN apk add --no-cache \
     # Build TSDuck (MPEG Transport Stream Toolkit)
     # Digital TV transport stream analysis tools
     # ========================================
-    && git clone https://github.com/tsduck/tsduck.git /tmp/tsduck \
+    && git clone --branch ${TSDUCK_version} --depth 1 https://github.com/tsduck/tsduck.git /tmp/tsduck \
     && cd /tmp/tsduck \
     && make -j$(nproc) NOGITHUB=1 NOTEST=1 NOVATEK=1 NODOC=1 CXXFLAGS_WARNINGS="-Wall" \
     && make install NODOC=1 \
@@ -77,9 +80,9 @@ RUN apk add --no-cache \
     && cd /tmp/ffmpeg \
     && export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib/" \
     && export PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig/" \
-    && wget https://github.com/FFmpeg/FFmpeg/archive/refs/heads/master.tar.gz \
-    && tar -xzf master.tar.gz \
-    && cd FFmpeg-master \
+    && wget https://github.com/FFmpeg/FFmpeg/archive/refs/tags/${FFMPEG_version}.tar.gz \
+    && tar -xzf ${FFMPEG_version}.tar.gz \
+    && cd FFmpeg-${FFMPEG_version} \
     && ./configure --enable-libvmaf --enable-libsrt --enable-version3 --enable-shared --enable-libdav1d --enable-gpl --enable-libx264 --enable-libx265 \
     && make -j$(nproc) \
     && make install \
