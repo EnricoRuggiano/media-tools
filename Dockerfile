@@ -37,6 +37,7 @@ RUN apk add --no-cache \
     xxd \
     x264-dev \
     x265-dev \
+    freetype-dev \
     && mkdir -p /tmp/vmaf /tmp/ffmpeg /app \
     # ========================================
     # Build SRT (Secure Reliable Transport)
@@ -83,7 +84,7 @@ RUN apk add --no-cache \
     && wget https://github.com/FFmpeg/FFmpeg/archive/refs/tags/${FFMPEG_version}.tar.gz \
     && tar -xzf ${FFMPEG_version}.tar.gz \
     && cd FFmpeg-${FFMPEG_version} \
-    && ./configure --enable-libvmaf --enable-libsrt --enable-version3 --enable-shared --enable-libdav1d --enable-gpl --enable-libx264 --enable-libx265 \
+    && ./configure --enable-libvmaf --enable-libsrt --enable-version3 --enable-shared --enable-libdav1d --enable-gpl --enable-libx264 --enable-libx265 --enable-libfreetype \
     && make -j$(nproc) \
     && make install \
     # ========================================
@@ -126,6 +127,7 @@ RUN apk add --no-cache \
     jq \
     x264-libs \
     x265-libs \
+    freetype \
     && pip3 install ffmpeg-progress-yield
 
 # Copy compiled libraries and binaries from builder stage
