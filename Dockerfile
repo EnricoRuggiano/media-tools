@@ -1,4 +1,4 @@
-FROM alpine:3.18 AS builder
+FROM alpine:3.20 AS builder
 
 LABEL stage=builder
 
@@ -7,7 +7,7 @@ ARG FFMPEG_version=n8.0
 ARG VMAF_version=3.0.0
 ARG easyVmaf_hash=31c59a444445125265044789d0754db8f39f71be
 ARG SRT_version=v1.5.5
-ARG TSDUCK_version=v3.43-4549
+ARG TSDUCK_version=v3.44-4676
 
 RUN apk add --no-cache \
     bash \
@@ -22,6 +22,8 @@ RUN apk add --no-cache \
     libedit-dev \
     zlib-dev \
     curl \
+    curl-dev \
+    libcurl \
     pcre-dev \
     libxml2-dev \
     meson \
@@ -41,6 +43,8 @@ RUN apk add --no-cache \
     harfbuzz-dev \
     libxcb-dev \
     fontconfig-dev \
+    librist-dev \
+    sqlite-dev \
     && mkdir -p /tmp/vmaf /tmp/ffmpeg /app \
     # ========================================
     # Build SRT (Secure Reliable Transport)
@@ -57,7 +61,7 @@ RUN apk add --no-cache \
     # ========================================
     && git clone --branch ${TSDUCK_version} --depth 1 https://github.com/tsduck/tsduck.git /tmp/tsduck \
     && cd /tmp/tsduck \
-    && make -j$(nproc) NOGITHUB=1 NOTEST=1 NOVATEK=1 NODOC=1 CXXFLAGS_WARNINGS="-Wall" \
+    && make -j$(nproc) NOGITHUB=1 NOTEST=1 NOVATEK=1 NODOC=1 NOSYSLOG=1 CXXFLAGS_WARNINGS="-Wall" \
     && make install NODOC=1 \
     # ========================================
     # Build libvmaf (Netflix VMAF Library)
@@ -108,7 +112,7 @@ RUN apk add --no-cache \
     && rm -rf /tmp/srt || true \
     && rm -rf /tmp/tsduck
 
-FROM alpine:3.18
+FROM alpine:3.20
 
 LABEL name="media-tools"
 
@@ -135,7 +139,9 @@ RUN apk add --no-cache \
     libxcb \
     fontconfig \
     font-dejavu \
-    && pip3 install ffmpeg-progress-yield
+    librist \
+    sqlite-libs \
+    && pip3 install --break-system-packages ffmpeg-progress-yield
 
 # Copy compiled libraries and binaries from builder stage
 # VMAF models and FFmpeg with VMAF support
