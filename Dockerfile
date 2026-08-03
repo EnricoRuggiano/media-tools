@@ -163,8 +163,14 @@ COPY --from=builder /app/easyVmaf-* /app/easyVmaf/
 # Local scripts
 COPY scripts/ /app/scripts/
 
-# Install easyVmaf wrapper script for global access
+# Install easyVmaf wrapper script for global access and others monitoring tools
 RUN cp /app/scripts/easyvmaf.sh /usr/bin/easyvmaf \
-    && chmod +x /usr/bin/easyvmaf
+    && chmod +x /usr/bin/easyvmaf \
+    && cp /app/scripts/dsmcc-extractor.py /usr/bin/dsmcc-extractor \
+    && chmod +x /usr/bin/dsmcc-extractor \
+    && cp /app/scripts/dsmcc-monitor.sh /usr/bin/dsmcc-monitor \
+    && chmod +x /usr/bin/dsmcc-monitor \
+    && cp /app/scripts/scte35-monitor.sh /usr/bin/scte35-monitor \
+    && chmod +x /usr/bin/scte35-monitor
 
 CMD ["/bin/bash"]
