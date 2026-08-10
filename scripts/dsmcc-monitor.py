@@ -144,7 +144,7 @@ def decode_scte35(b64_bytes):
         padding = bytes.fromhex("01010000")
 
         if payload.startswith(padding):
-            payload = payload[4:]
+            payload = payload[len(padding):]
     except Exception:
         return None
 
