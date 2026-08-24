@@ -4,6 +4,7 @@ import sys
 import subprocess
 import base64
 import re
+import argparse
 
 HEX_RE = re.compile(r'\b[0-9A-Fa-f]{2}\b')
 
@@ -151,7 +152,18 @@ def decode_scte35(b64_bytes):
     return payload
 
 
-def print_event(section_info):
+def is_splice_null_command(scte35_payload):
+    # splice_command_type is at byte offset 13 in a splice_info_section.
+    if len(scte35_payload) <= 13:
+        return False
+
+    if scte35_payload[0] != 0xFC:
+        return False
+
+    return scte35_payload[13] == 0x00
+
+
+def print_event(section_info, no_splice_null=False):
 
     body = section_info["body"]
 
@@ -164,6 +176,9 @@ def print_event(section_info):
 
 
     scte35 = decode_scte35(b64)
+
+    if no_splice_null and scte35 and is_splice_null_command(scte35):
+        return
 
     print("=" * 80)
 
@@ -211,16 +226,21 @@ def print_event(section_info):
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Monitor DSM-CC sections and decode SCTE-35 payloads"
+    )
+    parser.add_argument("source", help="Input source in the format <ip:port>")
+    parser.add_argument("pid", help="PID to monitor")
+    parser.add_argument(
+        "--no-splice-null",
+        action="store_true",
+        help="Do not print DSM-CC information for SCTE-35 splice_null commands",
+    )
 
-    if len(sys.argv) != 3:
-        print(
-            f"Usage: {sys.argv[0]} <ip:port> <pid>",
-            file=sys.stderr,
-        )
-        sys.exit(1)
+    args = parser.parse_args()
 
-    source = sys.argv[1]
-    pid = sys.argv[2]
+    source = args.source
+    pid = args.pid
 
     cmd = [
         "tsp",
@@ -246,7 +266,7 @@ def main():
             section = extract_dsmcc_section(packet)
             key = section.hex()
             info = parse_section(section)
-            print_event(info)
+            print_event(info, no_splice_null=args.no_splice_null)
 
 
     except KeyboardInterrupt:
