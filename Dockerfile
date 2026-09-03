@@ -63,6 +63,12 @@ RUN apk add --no-cache \
     && cd /tmp/tsduck \
     && make -j$(nproc) NOGITHUB=1 NOTEST=1 NOVATEK=1 NODOC=1 NOSYSLOG=1 CXXFLAGS_WARNINGS="-Wall" \
     && make install NODOC=1 \
+    # =======================================
+    # Build Tsduck Splicemanipulator
+    #========================================
+    && git clone https://github.com/EnricoRuggiano/tsplugin-splicemanipulator.git /tmp/tsplugin-splicemanipulator \
+    && cd /tmp/tsplugin-splicemanipulator \
+    && make build install \
     # ========================================
     # Build libvmaf (Netflix VMAF Library)
     # Video Multi-Method Assessment Fusion for quality measurement
